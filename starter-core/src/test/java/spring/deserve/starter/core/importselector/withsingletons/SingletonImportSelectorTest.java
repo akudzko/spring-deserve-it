@@ -44,16 +44,16 @@ class SingletonImportSelectorTest {
     // 2. Напишите тест с Spring Context для изучения и дебага того как работает ImportSelector etc (см в шапке)
     @Test
     void should_return_singletons_class_names() {
-        when(environment.getProperty("singltonpackage")).thenReturn(
+        when(environment.getProperty("importsingleton")).thenReturn(
                 "spring.deserve.starter.core.importselector.withsingletons");
         var strings = singletonImportSelector.selectImports(annotationMetadata);
 
         assertThat(strings)
                 .as("Should return class names with annotaitons Singleton")
                 .containsAll(List.of(
-                        "spring.deserve.starter.core.importselector.withsingletons.SingletonImportSelectorTest.S1")
+                        "spring.deserve.starter.core.importselector.withsingletons.SingletonImportSelectorTest$S1")
                 )
                 .doesNotContain(
-                        "spring.deserve.starter.core.importselector.withsingletons.SingletonImportSelectorTest.S3");
+                        "spring.deserve.starter.core.importselector.withsingletons.SingletonImportSelectorTest$S3");
     }
 }

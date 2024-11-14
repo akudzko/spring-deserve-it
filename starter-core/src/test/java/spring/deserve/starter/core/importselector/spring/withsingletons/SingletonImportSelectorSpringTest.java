@@ -1,10 +1,11 @@
 package spring.deserve.starter.core.importselector.spring.withsingletons;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import spring.deserve.starter.core.DeserverItCoreAutoConfiguration;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import spring.deserve.starter.core.Singleton;
+import spring.deserve.starter.core.SingletonImportSelector;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,10 +28,34 @@ class SingletonImportSelectorSpringTest {
 
     }
 
+    @Configuration
+    @Import(SingletonImportSelector.class)
+    public static class SingletonImportSelectorTestConfiguration {
+    }
+
     //TODO допишите тест основанный на ApplicationContextRunner
     @Test
     void should_return_singletons_class_names() {
-//        new ApplicationContextRunner()
-//                ...
+        new ApplicationContextRunner()
+                .withUserConfiguration(SingletonImportSelectorTestConfiguration.class)
+                .withPropertyValues("importsingleton=spring.deserve.starter.core.importselector.spring.withsingletons")
+                .run(context -> assertThat(context)
+                        .doesNotHaveBean(S3.class)
+                        .hasBean(
+                                "spring.deserve.starter.core.importselector.spring.withsingletons.SingletonImportSelectorSpringTest$S1")
+                        .hasBean(
+                                "spring.deserve.starter.core.importselector.spring.withsingletons.SingletonImportSelectorSpringTest$S2"));
+    }
+
+    @Test
+    void should_not_contain_errors_on_build_context_if_property_is_not_set() {
+        new ApplicationContextRunner()
+                .withUserConfiguration(SingletonImportSelectorTestConfiguration.class)
+                .run(context -> {
+                    assertThat(context)
+                            .hasNotFailed()
+                            .doesNotHaveBean(S1.class)
+                            .doesNotHaveBean(S2.class);
+                });
     }
 }
